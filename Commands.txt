@@ -1,0 +1,82 @@
+
+
+Init
+
+	./bgldgr.sh generate
+	docker-compose -f docker-compose-cli.yaml up -d
+	docker exec -it cli bash
+	
+	
+	Create channel
+		peer channel create -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/channel.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+		peer channel create 
+			-o orderer.example.com:7050 
+			-c mychannel 
+			-f ./channel-artifacts/channel.tx 
+			--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+		
+	peer channel join -b mychannel.block
+
+
+
+Install the chaincode.
+
+	peer chaincode install -n fabcar -v 1.0 -p github.com/chaincode/fabcar/go/
+
+
+
+Instantiate the chaincode.
+
+	peer chaincode instantiate 
+		-o orderer.example.com:7050 
+		--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem 
+		-C mychannel 
+		-n fabcar 
+		-v 1.0 
+		-c '{"Args":["init"]}'
+	
+	peer chaincode instantiate -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n fabcar -v 1.0 -c '{"Args":["init"]}'
+
+Check
+
+	peer chaincode list --instantiated -C mychannel
+
+
+
+Ledger
+
+	peer chaincode invoke 
+		-o orderer.example.com:7050 
+		-C mychannel 
+		-n fabcar 
+		-c '{"function":"initLedger","Args":[]}' 
+		--waitForEvent 
+		--tls 
+		--cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem 
+		--peerAddresses peer0.org1.example.com:7051 
+		--tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+
+
+	peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n fabcar -c '{"function":"initLedger","Args":[]}' --waitForEvent --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+
+
+Execute
+
+	peer chaincode query -C mychannel -n fabcar -c '{"Args":["queryAllCars"]}'
+
+
+
+
+
+DOCKER: If you get the access denied error
+
+Stop the container(s) using the following command:
+docker-compose down
+Delete all containers using the following command:
+docker rm -f $(docker ps -a -q)
+Delete all volumes using the following command:
+docker volume rm $(docker volume ls -q)
+Restart the containers using the following command:
+docker-compose up -d
