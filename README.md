@@ -139,3 +139,9 @@ Now that you have your network up and running with the FABCAR chaincode, you mus
 
 
 To complete the challenge, you must send us the link to your forked repository with the alterations you made.
+
+
+## Observations
+ - All the steps were recorded inside the file called Commands.txt including errors found.
+ 
+ - Unfortunately I couldn't remove the git submodules that were generated after I upgraded the chaincode inside mychannel.
