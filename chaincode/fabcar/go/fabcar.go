@@ -48,6 +48,7 @@ type Car struct {
 	Model  string `json:"model"`
 	Colour string `json:"colour"`
 	Owner  string `json:"owner"`
+	Year  string `json:"year"`
 }
 
 /*
