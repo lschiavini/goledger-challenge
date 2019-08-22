@@ -97,24 +97,36 @@ PART II
 			
 			peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n fabcar -c '{"function":"changeCarOwner","Args":["CAR0", "McMaha"]}' --waitForEvent --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 			
-		##Update chaincode
-			peer chaincode install -n fabcar -v 1.0 -p github.com/chaincode/fabcar/go/
-				## Line to compare with to create update call
-			peer chaincode install -n fabcar -v 1.0 -p github.com/chaincode/fabcar/go/
+		##Upgrade chaincode
+			##Since upgrade is similar to instantiate accordingly to the documentation, we use the same arguments:
+			peer chaincode upgrade -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n fabcar -v 2.1 -c '{"Args":["init"]}'
+
+
+		##Create New CAR
+			peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n fabcar -c '{"function":"createCar","Args":["CAR10","Fiat","Uno", "Blue","Skira","2014"]}' --waitForEvent --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 			
-			peer chaincode upgrade -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n fabcar -v 2.0 -c '{"Args":["init"]}'
+		##Query New Car
+			peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n fabcar -c '{"function":"queryCar","Args":["CAR10"]}' --waitForEvent --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 
 			
 
-DOCKER: If you get the access denied error
-	docker-machine ls
-		## Lists active docker containers
 
-	Stop the container(s) using the following command:
-	docker-compose down
-	Delete all containers using the following command:
-	docker rm -f $(docker ps -a -q)
-	Delete all volumes using the following command:
-	docker volume rm $(docker volume ls -q)
-	Restart the containers using the following command:
-	docker-compose up -d
+==========================================================================
+Known Errors:
+
+	Access Denied when using peer chaincode invoke...
+
+		DOCKER:
+			docker-machine ls
+				## Lists active docker containers
+
+			Stop the container(s) using the following command:
+				docker-compose down
+			Delete all containers using the following command:
+				docker rm -f $(docker ps -a -q)
+			Delete all volumes using the following command:
+				docker volume rm $(docker volume ls -q)
+			Restart the containers using the following command:
+				docker-compose up -d
+
+
